@@ -4,11 +4,14 @@ github project repository
 
 Functional:
 1.Program should be able to reliably measure and record blood sugar levels.
-   -Before eating and after eating
+   -Before eating and after eating.
 2.Program should reliably deliver the correct amount of insulin to counteract blood sugar levels.
+   -Insulin delivered either before or after eating, not both.
+   -May be a limit on how much insulin a patient can take per day.
 3.Program should be able to deliver insulin at any time it is needed.
 4.Program should be designed with the safety of the patient as the priority.
-5.Calculations for amount of insulin injected must be
+5.Calculations for amount of insulin injected must be accurate.
+   -Based on the rate of change of blood sugar levels.
 6.
 7.
 8.
