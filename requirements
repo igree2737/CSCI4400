@@ -3,11 +3,12 @@ ten functional requirements and two non-functional requirements. Update the requ
 github project repository 
 
 Functional:
-1.
-2.
-3.
-4.
-5.
+1.Program should be able to reliably measure and record blood sugar levels.
+   -Before eating and after eating
+2.Program should reliably deliver the correct amount of insulin to counteract blood sugar levels.
+3.Program should be able to deliver insulin at any time it is needed.
+4.Program should be designed with the safety of the patient as the priority.
+5.Calculations for amount of insulin injected must be
 6.
 7.
 8.
@@ -16,4 +17,4 @@ Functional:
 
 Non-Functional:
 1.Programming must be done in Java.
-2.
+2.Because of the nature of the project, the program should be extremely robust and secure.
