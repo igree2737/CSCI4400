@@ -21,3 +21,5 @@ Functional:
 Non-Functional:
 1.Programming must be done in Java.
 2.Because of the nature of the project, the program should be extremely robust and secure.
+   -Cannot be tampered with or altered easily.
+   -If the program should encounter a problem, it must be handled in a way such that the safety of the patient is assured.
