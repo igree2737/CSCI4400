@@ -14,7 +14,7 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 SET AUTO_INCREMENT = 1000;
 SET FOREIGN_KEY_CHECKS = 0; 
-/*TRUNCATE table patient; 
+TRUNCATE table patient; 
 truncate table staff;
 truncate table login;
 drop table staff;
@@ -29,7 +29,7 @@ drop table report;
 drop table patient;
 drop table schedule;
 drop table status;
-drop table vitals;*/
+drop table vitals;
 -- SET FOREIGN_KEY_CHECKS = 1;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -339,7 +339,6 @@ ALTER TABLE `staff`
   ADD UNIQUE KEY `staffID` (`staffID`),
   ADD KEY `staffID_2` (`staffID`);
 
-set auto_increment = 2000;
 ALTER TABLE `staff`
 CHANGE `staffID` `staffID` int(10) NOT NULL AUTO_INCREMENT;
 

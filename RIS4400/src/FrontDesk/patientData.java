@@ -5,37 +5,37 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import javax.swing.text.MaskFormatter;
-
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+//model
 public class patientData {
-	public IntegerProperty Id;
-	public StringProperty firstName;
-	public StringProperty lastName;
-	public SimpleObjectProperty<Date> Bdate;
-	public StringProperty num;
-	public StringProperty address1;
-	public StringProperty address2;
-	public StringProperty city;
-	public StringProperty state;
-	public IntegerProperty zip;
-	DateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
+	private IntegerProperty Id;
+	private StringProperty firstName;
+	private StringProperty lastName;
+	private Date Bdate;
+	private StringProperty num;
+	private StringProperty address1;
+	private StringProperty address2;
+	private StringProperty city;
+	private StringProperty state;
+	private IntegerProperty zip;
+	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	java.util.Date date;
+	java.sql.Date sqlDate;
 	
-	public patientData(int ID,String firstname,String lastname,Date dob,String Num,String address1,String city,
+	public patientData(int ID,String firstname,String lastname,Date dob,String Num,String address1,String address2,String city,
 			String state,int zip)
 	{
 		this.Id = new SimpleIntegerProperty(ID);
 		this.firstName = new SimpleStringProperty(firstname);
 		this.lastName = new SimpleStringProperty(lastname);
-		this.Bdate = new SimpleObjectProperty<Date>(dob);
+		this.Bdate = dob;
 		this.num = new SimpleStringProperty(Num);
 		this.address1 = new SimpleStringProperty(address1);
+		this.address2 = new SimpleStringProperty(address2);
 		this.city = new SimpleStringProperty(city);
 		this.state = new SimpleStringProperty(state);
 		this.zip = new SimpleIntegerProperty(zip);
@@ -50,7 +50,7 @@ public class patientData {
 	}
 	public String getFirstName()
 	{
-		return firstName.get();
+		return firstName.get().toString();
 	}
 	public void setFirstName(String firstname)
 	{
@@ -58,7 +58,7 @@ public class patientData {
 	}
 	public String getLastName()
 	{
-		return lastName.get();
+		return lastName.get().toString();
 	}
 	public void setLastName(String lastname)
 	{
@@ -66,12 +66,39 @@ public class patientData {
 	}
 	public Date getBdate()
 	{
-		return Bdate.get();
+		return Bdate;
 	}
-	public void setBdate(Date dob) throws ParseException
+	public String getAddress1()
 	{
-
-		Bdate.set(dob);;
+		return address1.get();
+	}
+	public String getAddress2()
+	{
+		return address2.get();
+	}
+	public int getZip()
+	{
+		return zip.get();
+	}
+	public String getZipAsString()
+	{
+		return zip.toString();
+	}
+	public String getNum()
+	{
+		return num.get();
+	}
+	public String getState()
+	{
+		return state.get();
+	}
+	public void setBdate(String dob) throws ParseException
+	{
+		
+		date = formatter.parse(dob);
+		sqlDate = new java.sql.Date(date.getTime());
+		Bdate = sqlDate;
+		
 	}
 	public void setNum(String num)
 	{
@@ -104,6 +131,10 @@ public class patientData {
 	{
 		this.city.set(city);
 	}
+	public String getCity()
+	{
+		return city.get();
+	}
 	public void setState(String state)
 	{
 		this.state.set(state);
@@ -123,10 +154,6 @@ public class patientData {
 	public StringProperty lastNameProperty()
 	{
 		return lastName;
-	}
-	public ObjectProperty<Date> bdateProperty()
-	{
-		return Bdate;
 	}
 	public StringProperty numProperty()
 	{

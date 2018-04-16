@@ -17,7 +17,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -25,12 +27,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import javax.swing.text.MaskFormatter;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
+import EntranceControllers.LogInController;
+
+//controller
 public class FrontDesk {
 	
 	private static Connection con;
@@ -39,19 +44,16 @@ public class FrontDesk {
 	java.util.Date date;
 	java.sql.Date sqlDate;
 	
-	DateFormat formatter = new SimpleDateFormat("mm/dd/yyyy");
-	DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	Parent root;
 	Stage stage;
 	
 	ObservableList<patientData>patientRecord = FXCollections.observableArrayList();
-	ObservableList<String>options;
 	
 	@FXML Button PatientButton;
 	@FXML Button ConfirmPatientButton;
 	@FXML Button ScheduleButton;
-	@FXML Button searchButton;
 	@FXML TextField FirstNameField;
 	@FXML TextField LastNameField;
 	@FXML TextField	IDfield;
@@ -70,7 +72,8 @@ public class FrontDesk {
 	@FXML TextField citySearch;
 	@FXML TextField stateSearch;
 	@FXML TextField	zipSearch;
-	@FXML TextField searchText;
+	@FXML TextField searchTextField;
+	@FXML TextField editedByUser;
 	@FXML TableView<patientData> archiveTable;
 	@FXML TableColumn<patientData,Integer> idcol;
 	@FXML TableColumn<patientData,String> firstNameCol;
@@ -83,7 +86,7 @@ public class FrontDesk {
 	@FXML TableColumn<patientData,String> stateCol;
 	@FXML TableColumn <patientData,Integer>zipCol;
 	@FXML Tab archiveTab;
-	@FXML ChoiceBox<String> choiceBox;
+	@FXML ChoiceBox<String> choiceBox = new ChoiceBox<>();
 	
 	//opens patient form in a new window
 	public void patientwindow(ActionEvent event)throws Exception
@@ -219,14 +222,9 @@ public class FrontDesk {
 	
 	//loads patient record from DB to the archive table
 	public void loadFromDB()
-	{
-		//initializes the choicebox for the archive table
-		options = FXCollections.observableArrayList("First Name","Last Name","Birth","Phone","City","State","Zip");
-		choiceBox.setItems(options);
-		choiceBox.setValue("First Name");
-		//
-		
+	{	
 		idcol.setCellValueFactory(new PropertyValueFactory<patientData,Integer>("Id"));
+		//ID is not editable
 		
 		firstNameCol.setCellValueFactory(new PropertyValueFactory<patientData,String>("firstName"));
 		firstNameCol.setCellFactory(TextFieldTableCell.<patientData>forTableColumn());
@@ -234,7 +232,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setFirstName(event.getNewValue());
         	try {
-				updateDB("fName",event.getNewValue(),patient.getId());
+				updateDB("fName",event.getNewValue(),patient.getId());		//updates first name in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -246,7 +245,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setLastName(event.getNewValue());
         	try {
-				updateDB("lName",event.getNewValue(),patient.getId());
+				updateDB("lName",event.getNewValue(),patient.getId());		//updates last name in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -254,6 +254,45 @@ public class FrontDesk {
         });
 		
         dobcol.setCellValueFactory(new PropertyValueFactory<patientData,Date>("Bdate"));
+        dobcol.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Date>() {
+
+            @Override
+            public String toString(Date t) {
+                if (t==null) {
+                    return "" ;
+                } else {
+                    return formatter.format(t);
+                }
+            }
+
+            @Override
+            public Date fromString(String string) {
+                try {
+                	date = formatter.parse(string);
+        			sqlDate = new java.sql.Date(date.getTime());;
+        			return sqlDate;
+                } catch (ParseException exc) {
+                    return null;
+                }
+            }
+
+        }));
+        dobcol.setOnEditCommit(event -> {
+        	patientData patient = event.getRowValue();
+        	try {
+				patient.setBdate(event.getNewValue().toString());
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        	try{
+        		updateDBDate("dateOfBirth",event.getNewValue().toString(),patient.getId());
+        		userTracker();
+        	}catch(Exception e)
+        	{
+        		e.printStackTrace();
+        	}
+        });
         //TO DO: Find a way to update Date type objects
         
 		phoneCol.setCellValueFactory(new PropertyValueFactory<patientData,String>("num"));
@@ -262,7 +301,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setNum(event.getNewValue());
         	try {
-				updateDB("phoneNum",event.getNewValue(),patient.getId());
+				updateDB("phoneNum",event.getNewValue(),patient.getId());	//updates phone number in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -275,7 +315,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setAddress1(event.getNewValue());
         	try {
-				updateDB("addressOne",event.getNewValue(),patient.getId());
+				updateDB("addressOne",event.getNewValue(),patient.getId());		//updates address one in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -287,7 +328,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setAddress2(event.getNewValue());
         	try {
-				updateDB("addressTwo",event.getNewValue(),patient.getId());
+				updateDB("addressTwo",event.getNewValue(),patient.getId());	//updates address two in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -300,7 +342,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setCity(event.getNewValue());
         	try {
-				updateDB("addressCity",event.getNewValue(),patient.getId());
+				updateDB("addressCity",event.getNewValue(),patient.getId());	//updates city in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -313,7 +356,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setState(event.getNewValue());
         	try {
-				updateDB("addressState",event.getNewValue(),patient.getId());
+				updateDB("addressState",event.getNewValue(),patient.getId());	//updates state in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -326,7 +370,8 @@ public class FrontDesk {
         	patientData patient = event.getRowValue();
         	patient.setZip(event.getNewValue());
         	try {
-				updateDB("addressZip",event.getNewValue().toString(),patient.getId());
+				updateDBZip("addressZip",event.getNewValue(),patient.getId());  //updates zip in database
+				userTracker();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -348,6 +393,7 @@ public class FrontDesk {
 		//fetches data from patient table
 		try
 		{
+			patientRecord.clear();
 			String query = "SELECT * FROM patient";
 			ResultSet rs = con.createStatement().executeQuery(query);
 			while(rs.next())
@@ -363,7 +409,23 @@ public class FrontDesk {
 			e.printStackTrace();
 		}
 		
-		archiveSearch();
+		finally{
+			try {
+				if (smt != null)
+				{
+					smt.close();
+				}
+				if (con != null)
+				{
+					con.close();
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		archiveTable.setItems(patientRecord);
+		//archiveSearch();
 	}
 	
 	//Updates the database to reflect edited values
@@ -383,39 +445,150 @@ public class FrontDesk {
 		}
 		
 		PreparedStatement stmt = con.prepareStatement("UPDATE patient SET "+column+" = ? WHERE patientID = ? ");
-		stmt.setLong(1, Integer.parseInt(newValue));
+		stmt.setString(1, newValue);
         stmt.setInt(2, id);
         stmt.execute();
+        
+		try {
+			if (smt != null)
+			{
+				smt.close();
+			}
+			if (con != null)
+			{
+				con.close();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public void updateDBZip(String column,int newValue,int id)throws SQLException
+	{
+		try 
+		{
+			Class.forName("com.mysql.jdbc.Driver");  
+			con=(Connection) DriverManager.getConnection(  
+			"jdbc:mysql://localhost:3306/RISystem","root","admin123"); //change to whatever your username/password is 
+			smt=(Statement) con.createStatement(); 
+		}
+		
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		PreparedStatement stmt = con.prepareStatement("UPDATE patient SET "+column+" = ? WHERE patientID = ? ");
+		stmt.setInt(1, newValue);
+        stmt.setInt(2, id);
+        stmt.execute();
+        
+        try {
+			if (smt != null)
+			{
+				smt.close();
+			}
+			if (con != null)
+			{
+				con.close();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void updateDBDate(String column,String newValue,int id)throws SQLException, ParseException
+	{
+		try 
+		{
+			Class.forName("com.mysql.jdbc.Driver");  
+			con=(Connection) DriverManager.getConnection(  
+			"jdbc:mysql://localhost:3306/RISystem","root","admin123"); //change to whatever your username/password is 
+			smt=(Statement) con.createStatement(); 
+		}
+		
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		date = formatter.parse(newValue);
+		sqlDate = new java.sql.Date(date.getTime());
+		PreparedStatement stmt = con.prepareStatement("UPDATE patient SET "+column+" = ? WHERE patientID = ? ");
+		stmt.setDate(1,sqlDate);
+        stmt.setInt(2, id);
+        stmt.execute();
+        
+        try {
+			if (smt != null)
+			{
+				smt.close();
+			}
+			if (con != null)
+			{
+				con.close();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public void archiveSearch()
+	public void archiveSearch(KeyEvent key)
 	{
-		FilteredList<patientData> filteredData = new FilteredList<>(patientRecord, p -> true);
-		searchText.textProperty().addListener((observable, oldValue, newValue) -> {
-	            filteredData.setPredicate(p -> {
-	                // If filter text is empty, display all persons.
-	                if (newValue == null || newValue.isEmpty()) {
-	                    return true;
-	                }
+		FilteredList<patientData> filterData = new FilteredList<>(patientRecord, p -> true);
+		searchTextField.textProperty().addListener((observable,oldvalue,newvalue) -> {
+            filterData.setPredicate(pat ->{
+            	 if (newvalue == null || newvalue.isEmpty()) {
+                     return true;
+                 }
+                 String typedText = newvalue.toLowerCase();
+                 if (pat.getFirstName().toLowerCase().indexOf(typedText) != -1) {
 
-	                // Compare first name and last name of every person with filter text.
-	                String lowerCaseFilter = newValue.toLowerCase();
-
-	                if (p.getFirstName().toLowerCase().contains(lowerCaseFilter)) {
-	                    return true; // Filter matches first name.
-	                } else if (p.getLastName().toLowerCase().contains(lowerCaseFilter)) {
-	                    return true; // Filter matches last name.
-	                }
-	                return false; // Does not match.
-	            });
-	        });
-		SortedList<patientData> sortedData = new SortedList<>(filteredData);
-
-        // 4. Bind the SortedList comparator to the TableView comparator.
-        sortedData.comparatorProperty().bind(archiveTable.comparatorProperty());
-
-        // 5. Add sorted (and filtered) data to the table.
-        archiveTable.setItems(sortedData);
+                     return true;
+                 }
+                 if (pat.getLastName().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 if (pat.getBdate().toString().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 if (pat.getZipAsString().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 if (pat.getAddress1().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 if (pat.getAddress2().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 if (pat.getNum().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                	 
+                 }
+                 if (pat.getCity().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 if (pat.getState().toLowerCase().indexOf(typedText) != -1){
+                	 return true;
+                 }
+                 else
+                	 return false;
+            });
+            SortedList<patientData> sortedList = new SortedList<>(filterData);
+            sortedList.comparatorProperty().bind(archiveTable.comparatorProperty());
+            archiveTable.setItems(sortedList);
+	});
+	
 	}
+	private void userTracker()
+	{
+		//keeps track of last user to edit the archive table
+		editedByUser.setText(LogInController.getUserName());
+	}
+	   
 	
 }
+
+
