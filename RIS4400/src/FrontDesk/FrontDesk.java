@@ -1,5 +1,8 @@
 package FrontDesk;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -19,6 +22,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import java.sql.Date;
@@ -29,10 +33,11 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import javax.swing.text.MaskFormatter;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
-
 import EntranceControllers.LogInController;
 
 //controller
@@ -74,6 +79,8 @@ public class FrontDesk {
 	@FXML TextField	zipSearch;
 	@FXML TextField searchTextField;
 	@FXML TextField editedByUser;
+	@FXML TextField dateBox;
+	@FXML TextField welcomeUser;
 	@FXML TableView<patientData> archiveTable;
 	@FXML TableColumn<patientData,Integer> idcol;
 	@FXML TableColumn<patientData,String> firstNameCol;
@@ -88,6 +95,24 @@ public class FrontDesk {
 	@FXML Tab archiveTab;
 	@FXML ChoiceBox<String> choiceBox = new ChoiceBox<>();
 	
+	@FXML public void initialize()
+	{
+		Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {            
+	        Calendar cal = Calendar.getInstance();
+	        int second = cal.get(Calendar.SECOND);
+	        int minute = cal.get(Calendar.MINUTE);
+	        int hour = cal.get(Calendar.HOUR);
+	        //System.out.println(hour + ":" + (minute) + ":" + second);
+	        dateBox.setText(hour + ":" + (minute) + ":" + second);
+	    }),
+	         new KeyFrame(Duration.seconds(1))
+	    );
+	    clock.setCycleCount(Animation.INDEFINITE);
+	    clock.play();
+	    
+	    welcomeUser.setText(LogInController.getUserName());
+	    
+	}
 	//opens patient form in a new window
 	public void patientwindow(ActionEvent event)throws Exception
 	{
