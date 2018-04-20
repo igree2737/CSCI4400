@@ -1,8 +1,5 @@
 package FrontDesk;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,12 +14,12 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import java.sql.Date;
@@ -33,8 +30,10 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.Random;
 
+import Scheduling.Event;
+import Scheduling.Scheduler;
 import javax.swing.text.MaskFormatter;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
@@ -48,17 +47,22 @@ public class FrontDesk {
 	
 	java.util.Date date;
 	java.sql.Date sqlDate;
-	
+	static java.sql.Statement stmt;
 	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	Parent root;
 	Stage stage;
+	Scene scene;
 	
 	ObservableList<patientData>patientRecord = FXCollections.observableArrayList();
+	ObservableList<Event>eventRecord = FXCollections.observableArrayList();
+	Random rand = new Random();
 	
 	@FXML Button PatientButton;
 	@FXML Button ConfirmPatientButton;
 	@FXML Button ScheduleButton;
+	@FXML Button backButton;
+	@FXML Button schedulePatientButton;
 	@FXML TextField FirstNameField;
 	@FXML TextField LastNameField;
 	@FXML TextField	IDfield;
@@ -81,6 +85,9 @@ public class FrontDesk {
 	@FXML TextField editedByUser;
 	@FXML TextField dateBox;
 	@FXML TextField welcomeUser;
+	@FXML TextField modalityBox;
+	@FXML TextField priorityBox;
+	@FXML TextArea descBox;
 	@FXML TableView<patientData> archiveTable;
 	@FXML TableColumn<patientData,Integer> idcol;
 	@FXML TableColumn<patientData,String> firstNameCol;
@@ -92,30 +99,15 @@ public class FrontDesk {
 	@FXML TableColumn<patientData,String> cityCol;
 	@FXML TableColumn<patientData,String> stateCol;
 	@FXML TableColumn <patientData,Integer>zipCol;
+	@FXML TableColumn <patientData,Integer> refPhysCol;
+	@FXML TableView<Event> ScheduleViewTable;
 	@FXML Tab archiveTab;
 	@FXML ChoiceBox<String> choiceBox = new ChoiceBox<>();
 	
-	@FXML public void initialize()
-	{
-		Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e -> {            
-	        Calendar cal = Calendar.getInstance();
-	        int second = cal.get(Calendar.SECOND);
-	        int minute = cal.get(Calendar.MINUTE);
-	        int hour = cal.get(Calendar.HOUR);
-	        //System.out.println(hour + ":" + (minute) + ":" + second);
-	        dateBox.setText(hour + ":" + (minute) + ":" + second);
-	    }),
-	         new KeyFrame(Duration.seconds(1))
-	    );
-	    clock.setCycleCount(Animation.INDEFINITE);
-	    clock.play();
-	    
-	    welcomeUser.setText(LogInController.getUserName());
-	    
-	}
 	//opens patient form in a new window
 	public void patientwindow(ActionEvent event)throws Exception
 	{
+		
 		try {
 			System.out.println("New Patient");
 			root = FXMLLoader.load(getClass().getResource("/FrontDeskView/FrontDeskNewPatient.fxml"));
@@ -155,7 +147,7 @@ public class FrontDesk {
 		String DOB = DOBfield.getText();
 		if (DOB.trim().equals("")||DOB.trim().equals(null))
 		{
-			DOB = "00/00/0000";
+			DOB = "0000-00-00";
 			date = formatter.parse(DOB);
 			sqlDate = new java.sql.Date(date.getTime());
 		}
@@ -167,7 +159,7 @@ public class FrontDesk {
 		}
 		String gend = GenderField.getText().toUpperCase();
 		if (gend.trim().equals(""))
-			gend = "NA";
+			gend = "M/F";
 		String Num = NumberField.getText();
 		if (Num.trim().equals(""))
 			Num = "0000000000";
@@ -196,22 +188,24 @@ public class FrontDesk {
 			
 			//inserts data into patient table
 			try {
-				String sql = "INSERT INTO patient (fName,lName,dateOfBirth,gender,phoneNum,addressOne,addressTwo,"
-						+ "addressCity,addressState,addressZip)"
-						+ " VALUES (?,?,?,?,?,?,?,?,?,?)";
+				String sql = "INSERT INTO patient (patientID,fName,lName,dateOfBirth,gender,phoneNum,addressOne,addressTwo,"
+						+ "addressCity,addressState,addressZip,refPhysicianID)"
+						+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 						
 				PreparedStatement smt = con.prepareStatement(sql);
 				
-				smt.setString(1, fname);
-				smt.setString(2, lname);
-				smt.setDate(3, sqlDate); 
-				smt.setString(4, gend);
-				smt.setString(5, Num);
-				smt.setString(6, address1);
-				smt.setString(7, address2);
-				smt.setString(8, addresscity);
-				smt.setString(9, addressstate);
-				smt.setInt(10, Zip);
+				smt.setInt(1, newPatientNum());
+				smt.setString(2, fname);
+				smt.setString(3, lname);
+				smt.setDate(4, sqlDate); 
+				smt.setString(5, gend);
+				smt.setString(6, Num);
+				smt.setString(7, address1);
+				smt.setString(8, address2);
+				smt.setString(9, addresscity);
+				smt.setString(10, addressstate);
+				smt.setInt(11, Zip);
+				smt.setInt(12, 23445);
 				
 				if(smt.executeUpdate() > 0)
 				{
@@ -249,7 +243,7 @@ public class FrontDesk {
 	public void loadFromDB()
 	{	
 		idcol.setCellValueFactory(new PropertyValueFactory<patientData,Integer>("Id"));
-		//ID is not editable
+		refPhysCol.setCellValueFactory(new PropertyValueFactory<patientData,Integer>("refID"));
 		
 		firstNameCol.setCellValueFactory(new PropertyValueFactory<patientData,String>("firstName"));
 		firstNameCol.setCellFactory(TextFieldTableCell.<patientData>forTableColumn());
@@ -424,7 +418,8 @@ public class FrontDesk {
 			while(rs.next())
 			{
 				patientRecord.add(new patientData(rs.getInt("patientID"),rs.getString("fName"),rs.getString("lName"),rs.getDate("dateOfBirth"),rs.getString("phoneNum"),
-						rs.getString("addressOne"),rs.getString("addressTwo"),rs.getString("addressCity"),rs.getString("addressState"),rs.getInt("addressZip")));
+						rs.getString("addressOne"),rs.getString("addressTwo"),rs.getString("addressCity"),rs.getString("addressState"),rs.getInt("addressZip")
+						,rs.getInt("refPhysicianID")));
 			}
 			
 		}
@@ -450,7 +445,6 @@ public class FrontDesk {
 			}
 		}
 		archiveTable.setItems(patientRecord);
-		//archiveSearch();
 	}
 	
 	//Updates the database to reflect edited values
@@ -607,13 +601,152 @@ public class FrontDesk {
 	});
 	
 	}
+	public static int newPatientNum()
+	{
+
+		ResultSet cur;
+		int value = 0;
+		try {
+			cur=con.createStatement().executeQuery("SELECT patientID FROM patient ORDER BY patientID DESC LIMIT 1;");
+			
+			while(cur.next())
+		{
+			
+			int val=cur.getInt("patientID");
+			val=val+1;
+			value=val;
+			
+		}
+			
+			
+			
+			
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return value;
+	}
+
 	private void userTracker()
 	{
 		//keeps track of last user to edit the archive table
 		editedByUser.setText(LogInController.getUserName());
 	}
-	   
+	public void returnToMenu(ActionEvent event)throws Exception
+	{
+		try {
+			stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+			root = FXMLLoader.load(getClass().getResource("/EntranceView/MainMenu.fxml"));
+			scene = new Scene(root);
+			stage.setScene(scene);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
+	public static int newNumber()
+	{
+
+		ResultSet cur;
+		int value = 0;
+		try {
+			cur=con.createStatement().executeQuery("SELECT orderID FROM schedule ORDER BY orderID DESC LIMIT 1;");
+			
+			while(cur.next())
+		{
+			
+			int val=cur.getInt("orderID");
+			val=val+1;
+			value = val;
+			
+		}
+			
+			
+			
+			
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return value;
+	}
+	
+	//shows schedulerView
+	public void showScheduler(ActionEvent event)throws Exception
+	{
+		try {
+			System.out.println("Scheduler");
+			root = FXMLLoader.load(getClass().getResource("/FrontDeskView/schedulerView.fxml"));
+			stage = new Stage();
+			stage.setScene(new Scene(root));
+			stage.show();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//schedules patient and adds data to the schedule table
+	public void schedulePatient()
+	{
+		int roomNum = rand.nextInt(199)+1;
+		patientData p = archiveTable.getSelectionModel().getSelectedItem();
+		Event event = new Event(modalityBox.getText(),descBox.getText(),Integer.parseInt(priorityBox.getText()),p.getId(),newNumber());
+		Scheduler s = new Scheduler(con);
+		s.createEvent(event);
+		s.startTreatment(event.getPatientID());
+		
+        try 
+		{
+			Class.forName("com.mysql.jdbc.Driver");  
+			con=(Connection) DriverManager.getConnection(  
+			"jdbc:mysql://localhost:3306/RISystem","root","admin123"); //change to whatever your username/password is 
+			smt=(Statement) con.createStatement(); 
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		
+		try
+		{
+			eventRecord.clear();
+			String query = "SELECT * FROM schedule";
+			ResultSet rs = con.createStatement().executeQuery(query);
+			while(rs.next())
+			{
+				eventRecord.add(new Event(rs.getString("modality"),rs.getString("procType"),rs.getInt("patientID"),rs.getInt("orderID")));
+			}
+			
+		}
+		//
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		finally{
+			try {
+				if (smt != null)
+				{
+					smt.close();
+				}
+				if (con != null)
+				{
+					con.close();
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		ScheduleViewTable.setItems(eventRecord);
+		
+	}
 }
 
 

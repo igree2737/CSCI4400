@@ -6,25 +6,12 @@
 -- Generation Time: Apr 11, 2018 at 08:22 PM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
-USE RISystem;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-/*drop table `billing`;
-drop table `file`;
-drop table `images`;
-drop table `login`;
-drop table `patient`;
-drop table `presentstaff`;
-drop table `radorder`;
-drop table `refphysician`;
-drop table `report`;
-drop table `schedule`;
-drop table `staff`;
-drop table `status`;
-drop table `vitals`;*/
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -104,7 +91,7 @@ CREATE TABLE `patient` (
 
 INSERT INTO `patient` (`patientID`, `fName`, `lName`, `dateOfBirth`, `gender`, `phoneNum`, `addressOne`, `addressTwo`, `addressCity`, `addressState`, `addressZip`, `refPhysicianID`) VALUES
 (1, 'Bill', 'Doe', '1999-01-01', 'Male', '100-100-1010', '1 Street', 'Box 1', 'City', 'AL', '10100', 23445),
-(2, 'Jane', 'Doe', '1999-12-12', 'Female', '100-200-3000', '1 Road', 'Apartment 1', 'City', 'AL', '11111', 23445);
+(1000000000, 'Jane', 'Doe', '1999-12-12', 'Female', '100-200-3000', '1 Road', 'Apartment 1', 'City', 'AL', '11111', 23445);
 
 -- --------------------------------------------------------
 
@@ -159,7 +146,7 @@ CREATE TABLE `refphysician` (
 
 INSERT INTO `refphysician` (`lName`, `refPhysicianID`, `fName`) VALUES
 ('Man', 1, 'Mister'),
-('Woman', 2, 'Misses');
+('Woman', 1000000000, 'Misses');
 
 -- --------------------------------------------------------
 

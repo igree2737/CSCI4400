@@ -22,12 +22,13 @@ public class patientData {
 	private StringProperty city;
 	private StringProperty state;
 	private IntegerProperty zip;
+	private IntegerProperty refID;
 	DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 	java.util.Date date;
 	java.sql.Date sqlDate;
 	
 	public patientData(int ID,String firstname,String lastname,Date dob,String Num,String address1,String address2,String city,
-			String state,int zip)
+			String state,int zip,int refID)
 	{
 		this.Id = new SimpleIntegerProperty(ID);
 		this.firstName = new SimpleStringProperty(firstname);
@@ -39,6 +40,7 @@ public class patientData {
 		this.city = new SimpleStringProperty(city);
 		this.state = new SimpleStringProperty(state);
 		this.zip = new SimpleIntegerProperty(zip);
+		this.refID = new SimpleIntegerProperty(refID);
 	}
 	public int getId()
 	{
@@ -47,6 +49,14 @@ public class patientData {
 	public void setId(int id)
 	{
 		Id.set(id);
+	}
+	public int getRefID()
+	{
+		return refID.get();
+	}
+	public void setRefID(int refID)
+	{
+		this.refID.set(refID);
 	}
 	public String getFirstName()
 	{
@@ -146,6 +156,10 @@ public class patientData {
 	public IntegerProperty idProperty()
 	{
 		return Id;
+	}
+	public IntegerProperty refIdProperty()
+	{
+		return refID;
 	}
 	public StringProperty firstNameProperty()
 	{

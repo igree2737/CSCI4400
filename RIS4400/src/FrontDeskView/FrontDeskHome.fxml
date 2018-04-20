@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Separator?>
@@ -20,7 +15,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="AnchorPaneMain" prefHeight="803.0" prefWidth="1333.0" stylesheets="@../FrontDesk/FrontDesk.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FrontDesk.FrontDesk">
+<AnchorPane fx:id="AnchorPaneMain" prefHeight="803.0" prefWidth="1333.0" stylesheets="@../FrontDesk/FrontDesk.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="FrontDesk.FrontDesk">
    <children>
       <TabPane layoutY="-1.0" prefHeight="803.0" prefWidth="1333.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
@@ -28,14 +23,18 @@
             <content>
               <AnchorPane fx:id="HomePane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" styleClass="text-field">
                      <children>
-                        <Separator layoutX="522.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="776.0" prefWidth="0.0" />
+                        <Separator layoutX="522.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="776.0" prefWidth="0.0">
+                           <effect>
+                              <DropShadow />
+                           </effect></Separator>
                         <TableView fx:id="ScheduleViewTable" editable="true" layoutX="523.0" layoutY="-2.0" prefHeight="778.0" prefWidth="810.0">
                           <columns>
-                            <TableColumn fx:id="PatientCol" prefWidth="255.0" text="Patient " />
-                            <TableColumn fx:id="ProcedureCol" minWidth="0.0" prefWidth="109.0" text="Procedure" />
-                              <TableColumn fx:id="TimeCol" minWidth="4.0" prefWidth="83.0" text="Time" />
-                              <TableColumn fx:id="PhysCol" prefWidth="242.0" text="Physician" />
-                              <TableColumn fx:id="RoomCol" minWidth="8.0" prefWidth="120.0" text="Room No." />
+                            <TableColumn fx:id="FnameCol" prefWidth="119.0" text="First Name" />
+                              <TableColumn fx:id="LnameCol" prefWidth="119.0" text="Last Name" />
+                            <TableColumn fx:id="ProcedureCol" minWidth="0.0" prefWidth="104.0" text="Procedure" />
+                              <TableColumn fx:id="TimeCol" minWidth="4.0" prefWidth="88.0" text="Time" />
+                              <TableColumn fx:id="PhysCol" prefWidth="108.0" text="Physician" />
+                              <TableColumn fx:id="RoomCol" minWidth="8.0" prefWidth="86.0" text="Room No." />
                           </columns>
                            <styleClass>
                               <String fx:value="table-row-cell" />
@@ -46,26 +45,13 @@
                               <DropShadow />
                            </effect>
                         </TableView>
-                        <Button fx:id="ScheduleButton" layoutX="105.0" layoutY="263.0" mnemonicParsing="false" text="Schedule Patient" />
-                        <Button fx:id="PatientButton" layoutX="335.0" layoutY="263.0" mnemonicParsing="false" onAction="#patientwindow" text="New Patient" />
-                        <TextField editable="false" prefHeight="66.0" prefWidth="236.0" text="Welcome">
+                        <Button fx:id="PatientButton" layoutX="217.0" layoutY="266.0" mnemonicParsing="false" onAction="#patientwindow" text="New Patient" />
+                        <TextArea editable="false" layoutX="-1.0" prefHeight="244.0" prefWidth="518.0" text="Welcome to the home page for the front&#10;desk. You can create a new patient record&#10;by clicking the button.">
                            <font>
                               <Font size="24.0" />
                            </font>
-                        </TextField>
-                        <TextField fx:id="welcomeUser" editable="false" layoutX="167.0" layoutY="8.0" prefHeight="51.0" prefWidth="192.0">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </TextField>
-                        <TextField fx:id="dateBox" editable="false" layoutY="482.0" prefHeight="36.0" prefWidth="201.0">
-                           <font>
-                              <Font size="14.0" />
-                           </font>
-                           <effect>
-                              <DropShadow />
-                           </effect>
-                        </TextField>
+                        </TextArea>
+                        <Button fx:id="backButton" layoutX="14.0" layoutY="735.0" mnemonicParsing="false" onAction="#returnToMenu" text="Main Menu" />
                      </children>
                   </AnchorPane>
             </content>
@@ -75,24 +61,28 @@
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
                         <HBox layoutX="70.0" layoutY="147.0" prefHeight="26.0" prefWidth="377.0" />
-                        <TextArea editable="false" layoutX="-1.0" prefHeight="103.0" prefWidth="518.0" text="Welcome to the archives. Here you can search&#10;for a patient in the table to the right.">
+                        <TextArea editable="false" layoutX="-1.0" prefHeight="165.0" prefWidth="455.0" text="Welcome to the archives. Here you can search&#10;for a patient in the table to the right. You can&#10;also schedule a patient for a procedure by &#10;selecting a patient from the table and then&#10;clicking the button.">
                            <font>
-                              <Font size="24.0" />
+                              <Font size="20.0" />
                            </font>
                         </TextArea>
-                        <Separator layoutX="516.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="776.0" prefWidth="0.0" />
-                        <TableView fx:id="archiveTable" editable="true" layoutX="516.0" layoutY="-1.0" prefHeight="776.0" prefWidth="818.0">
+                        <Separator layoutX="444.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="776.0" prefWidth="0.0">
+                           <effect>
+                              <DropShadow />
+                           </effect></Separator>
+                        <TableView fx:id="archiveTable" editable="true" layoutX="448.0" layoutY="-1.0" prefHeight="776.0" prefWidth="886.0">
                           <columns>
-                            <TableColumn fx:id="idcol" prefWidth="62.0" text="ID" />
-                            <TableColumn fx:id="firstNameCol" prefWidth="114.0" text="First Name" />
-                              <TableColumn fx:id="lastNameCol" prefWidth="106.0" text="Last Name" />
+                            <TableColumn fx:id="idcol" prefWidth="73.0" text="ID" />
+                            <TableColumn fx:id="firstNameCol" prefWidth="106.0" text="First Name" />
+                              <TableColumn fx:id="lastNameCol" prefWidth="103.0" text="Last Name" />
                               <TableColumn fx:id="dobcol" prefWidth="64.0" text="DOB" />
                               <TableColumn fx:id="phoneCol" prefWidth="99.0" text="Phone" />
                               <TableColumn fx:id="addrCol" prefWidth="91.0" text="Address 1" />
-                              <TableColumn fx:id="addrCol2" prefWidth="94.0" text="Address 2" />
-                              <TableColumn fx:id="cityCol" minWidth="0.0" prefWidth="86.0" text="City" />
-                              <TableColumn fx:id="stateCol" prefWidth="43.0" text="State" />
-                              <TableColumn fx:id="zipCol" prefWidth="58.0" text="Zip" />
+                              <TableColumn fx:id="addrCol2" prefWidth="84.0" text="Address 2" />
+                              <TableColumn fx:id="cityCol" minWidth="0.0" prefWidth="78.0" text="City" />
+                              <TableColumn fx:id="stateCol" prefWidth="50.0" text="State" />
+                              <TableColumn fx:id="zipCol" prefWidth="59.0" text="Zip" />
+                              <TableColumn fx:id="refPhysCol" prefWidth="76.0" text="RefPhysID" />
                           </columns>
                         </TableView>
                         <TextField alignment="CENTER" editable="false" layoutX="14.0" layoutY="735.0" text="Last edited by:">
@@ -100,11 +90,11 @@
                               <Font size="14.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="editedByUser" editable="false" layoutX="146.0" layoutY="731.0" prefHeight="30.0" prefWidth="224.0">
+                        <TextField fx:id="editedByUser" editable="false" layoutX="140.0" layoutY="731.0" prefHeight="30.0" prefWidth="224.0">
                            <font>
                               <Font size="18.0" />
                            </font></TextField>
-                        <TextField fx:id="searchTextField" layoutX="170.0" layoutY="242.0" onKeyTyped="#archiveSearch" prefHeight="25.0" prefWidth="177.0" promptText="Search Here">
+                        <TextField fx:id="searchTextField" layoutX="138.0" layoutY="239.0" onKeyTyped="#archiveSearch" prefHeight="25.0" prefWidth="177.0" promptText="Search Here">
                            <effect>
                               <InnerShadow />
                            </effect>
@@ -112,6 +102,11 @@
                               <Font size="14.0" />
                            </font>
                         </TextField>
+                        <Button fx:id="schedulePatientButton" layoutX="158.0" layoutY="340.0" mnemonicParsing="false" onAction="#showScheduler" prefHeight="25.0" prefWidth="137.0" text="Schedule Patient">
+                           <effect>
+                              <DropShadow />
+                           </effect>
+                        </Button>
                      </children>
                      <styleClass>
                         <String fx:value="table-cell" />

@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 public class MainMenuController 
 {
+	@SuppressWarnings("unused")
 	private Main main;
 	Stage stage;
 	Scene scene;
@@ -23,7 +24,7 @@ public class MainMenuController
 	@FXML Button ButtonFiles;
 	@FXML Button ButtonLogOut;
 	@FXML Button ButtonBilling;
-	@FXML Button ButtonFrontDesk;
+	@FXML Button ButtonReferring;
 	
 
 	//used to connect the main class with the controller
@@ -34,43 +35,108 @@ public class MainMenuController
 	
 	public void setUp()
 	{
+		
 		int Level = LogInController.getLevel();
-		// if not admin or billing can not see billing
-		if (Level > 1 && Level != 5)
+		ButtonRegistration.setVisible(false);
+		ButtonVitals.setVisible(false);
+		ButtonImaging.setVisible(false);
+		ButtonFiles.setVisible(false);
+		ButtonLogOut.setVisible(false);
+		ButtonBilling.setVisible(false);
+		ButtonReferring.setVisible(false);
+		System.out.println(Level);
+		
+		//admin
+		if (Level == 1)
 		{
-			ButtonBilling.setVisible(false);
+			ButtonRegistration.setVisible(true);
+			ButtonVitals.setVisible(true);
+			ButtonImaging.setVisible(true);
+			ButtonFiles.setVisible(true);
+			ButtonLogOut.setVisible(true);
+			ButtonBilling.setVisible(true);
+			ButtonReferring.setVisible(true);
 		}
-		//if not admin or doctor can not see file review
-		if (Level > 2)
+		
+		//Doctor
+		else if (Level == 2)
 		{
-			ButtonFiles.setVisible(false);
+			//ButtonRegistration.setVisible(true);
+			//ButtonVitals.setVisible(true);
+			//ButtonImaging.setVisible(true);
+			ButtonFiles.setVisible(true);
+			ButtonLogOut.setVisible(true);
+			//ButtonBilling.setVisible(true);
+			//ButtonReferring.setVisible(true);
 		}
-		//if not admin, doc, or nurse can not see imaging or vitals
-		if (Level > 3)
+		
+		//Nurse
+		else if (Level == 3)
 		{
-			ButtonImaging.setVisible(false);
-			ButtonVitals.setVisible(false);
+			//ButtonRegistration.setVisible(true);
+			ButtonVitals.setVisible(true);
+			//ButtonImaging.setVisible(true);
+			//ButtonFiles.setVisible(true);
+			ButtonLogOut.setVisible(true);
+			//ButtonBilling.setVisible(true);
+			//ButtonReferring.setVisible(true);
 		}
+		
+		//Clerk
+		else if (Level == 4)
+		{
+			ButtonRegistration.setVisible(true);
+			//ButtonVitals.setVisible(true);
+			//ButtonImaging.setVisible(true);
+			//ButtonFiles.setVisible(true);
+			ButtonLogOut.setVisible(true);
+			ButtonBilling.setVisible(true);
+			//ButtonReferring.setVisible(true);
+		}
+		
+		//Referring
+		else if (Level == 5)
+		{
+			//ButtonRegistration.setVisible(true);
+			//ButtonVitals.setVisible(true);
+			//ButtonImaging.setVisible(true);
+			//ButtonFiles.setVisible(true);
+			ButtonLogOut.setVisible(true);
+			//ButtonBilling.setVisible(true);
+			ButtonReferring.setVisible(true);
+		}
+		
+		//Tech
+		else if (Level == 6)
+		{
+			//ButtonRegistration.setVisible(true);
+			//ButtonVitals.setVisible(true);
+			ButtonImaging.setVisible(true);
+			//ButtonFiles.setVisible(true);
+			ButtonLogOut.setVisible(true);
+			//ButtonBilling.setVisible(true);
+			//ButtonReferring.setVisible(true);
+		}
+		
 	}
 	
 	public void registration(ActionEvent event) throws Exception
 	{
 		System.out.println("registration");
-		/*stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-
-		root = FXMLLoader.load(getClass().getResource("/EntranceView/Registration.fxml"));
+		stage = (Stage)	((Button)	event.getSource()).getScene().getWindow();
+		root = FXMLLoader.load(getClass().getResource("/FrontDeskView/FrontDeskHome.fxml"));
 		scene = new Scene(root);
-		stage.setScene(scene);*/
+		stage.setScene(scene);
 	}
 	
 	public void vitals(ActionEvent event) throws Exception
 	{
 		System.out.println("vitals");
-		/*stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+		stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
-		root = FXMLLoader.load(getClass().getResource("/EntranceView/Vitals.fxml"));
+		root = FXMLLoader.load(getClass().getResource("/Vitals/VitalsView.fxml"));
 		scene = new Scene(root);
-		stage.setScene(scene);*/
+		stage.setScene(scene);
 	}
 	
 	public void imaging(ActionEvent event) throws Exception
@@ -106,7 +172,7 @@ public class MainMenuController
 	public void billing(ActionEvent event) throws Exception
 	{
 		System.out.println("billing");
-		Billing.billing.billingStart();
+		//Billing.billing.billingStart();
 		/*stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
 
 		root = FXMLLoader.load(getClass().getResource("/EntranceView/Registration.fxml"));
@@ -114,12 +180,15 @@ public class MainMenuController
 		stage.setScene(scene);*/
 	}
 	
-	public void frontdesk(ActionEvent event)throws Exception
+	public void referring(ActionEvent event) throws Exception
 	{
-		System.out.println("Front Desk");
-		stage = (Stage)	((Button)	event.getSource()).getScene().getWindow();
-		root = FXMLLoader.load(getClass().getResource("/FrontDeskView/FrontDeskHome.fxml"));
+		System.out.println("referring");
+		//referring.referringPhysician.referringStart();
+		/*stage = (Stage) ((Button) event.getSource()).getScene().getWindow();
+
+		root = FXMLLoader.load(getClass().getResource("/EntranceView/Files.fxml"));
 		scene = new Scene(root);
-		stage.setScene(scene);
+		stage.setScene(scene);*/
 	}
+	
 }

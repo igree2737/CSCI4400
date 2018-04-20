@@ -9,7 +9,7 @@
    <children>
       <AnchorPane prefHeight="867.0" prefWidth="1217.0">
          <children>
-            <TextField alignment="CENTER" editable="false" layoutX="-1.0" prefHeight="123.0" prefWidth="1217.0" text="New Patient Record">
+            <TextField alignment="CENTER" editable="false" layoutX="-1.0" prefHeight="123.0" prefWidth="1217.0" stylesheets="@../FrontDesk/FrontDesk.css" text="New Patient Record">
                <font>
                   <Font size="36.0" />
                </font>
